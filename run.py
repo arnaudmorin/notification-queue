@@ -3,7 +3,7 @@
 import web
 from collections import deque
 
-messages = deque([])
+messages = deque([],maxlen=5)
 
 urls = (
     '/(.*)', 'notification'
