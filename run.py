@@ -5,7 +5,6 @@ import os
 import requests
 from collections import deque
 
-messages = deque([],maxlen=5)
 
 urls = (
     '/(.*)', 'notification'
@@ -23,24 +22,22 @@ def read_password():
 
 class notification:
     password = read_password()
+    messages = deque([],maxlen=5)
 
     def GET(self, password):
 	if password == self.password:
-	    if len(messages) > 0:
-		return messages.popleft()
-        else:
-            web.ctx.status = '401 Unauthorized'
-
+	    if len(self.messages) > 0:
+                print(self.messages)
+		return self.messages.popleft()
+        web.ctx.status = '401 Unauthorized'
         return
 
     def POST(self, password):
 	if password == self.password:
-	    if len(messages) > 0:
-                message = web.data()  # you can get data use this method
-                messages.append(message)
+            message = web.data()  # you can get data use this method
+            self.messages.append(message)
         else:
             web.ctx.status = '401 Unauthorized'
-
         return
 
 if __name__ == "__main__":
