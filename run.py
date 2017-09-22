@@ -29,8 +29,10 @@ class notification:
 	    if len(self.messages) > 0:
                 print(self.messages)
 		return self.messages.popleft()
+            else:
+                return ''
         web.ctx.status = '401 Unauthorized'
-        return
+        return ''
 
     def POST(self, password):
 	if password == self.password:
@@ -38,7 +40,7 @@ class notification:
             self.messages.append(message)
         else:
             web.ctx.status = '401 Unauthorized'
-        return
+        return ''
 
 if __name__ == "__main__":
     app.run()
