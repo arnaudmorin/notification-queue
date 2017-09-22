@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import web
+import os
+import requests
 from collections import deque
 
 messages = deque([],maxlen=5)
@@ -10,18 +12,36 @@ urls = (
 )
 app = web.application(urls, globals())
 
+def read_password():
+    """Read password from $HOME/.p"""
+    f = open(os.environ['HOME'] + "/.p", "r+")
+    for line in f.readlines():
+        password = line.rstrip()
+    f.close()
+    return password
+
 
 class notification:
-    def GET(self, url):
-        if len(messages) > 0:
-            return messages.popleft()
+    password = read_password()
 
-        return ''
+    def GET(self, password):
+	if password == self.password:
+	    if len(messages) > 0:
+		return messages.popleft()
+        else:
+            web.ctx.status = '401 Unauthorized'
 
-    def POST(self, url):
-        message = web.data()  # you can get data use this method
-        messages.append(message)
-        return 'ok'
+        return
+
+    def POST(self, password):
+	if password == self.password:
+	    if len(messages) > 0:
+                message = web.data()  # you can get data use this method
+                messages.append(message)
+        else:
+            web.ctx.status = '401 Unauthorized'
+
+        return
 
 if __name__ == "__main__":
     app.run()
