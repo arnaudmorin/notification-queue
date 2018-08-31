@@ -6,6 +6,6 @@ while true ; do
     if [ "Z$data" != "Z" ]; then
         notify-send "$data"
         blink.sh &
-        curl -X  POST -d to=33618671034 -d message="salut" -d token="$(cat ~/.p_sms)" http://192.168.100.3:5000/send
+        curl -X  POST -d to=33618671034 -d message="$data" -d token="$(cat ~/.p_sms)" http://192.168.100.3:5000/send
     fi
 done
