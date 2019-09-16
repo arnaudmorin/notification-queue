@@ -23,9 +23,11 @@ def read_password():
 
 
 def send(password, data):
+    headers = {'Content-Type': 'text/plain;charset=utf-8'}
     requests.post(
         'https://notifications.arnaudmorin.fr/{}'.format(password),
-        data=data,
+        data=data.encode('utf8'),
+        headers=headers,
     )
 
 
