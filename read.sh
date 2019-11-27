@@ -6,8 +6,9 @@ while true ; do
     if [ "Z$data" != "Z" ]; then
         # If it's a link to open
         if [[ $data =~ ^xdg-open.* ]]; then
-            echo "Link: $data"
-            eval $data
+            link=$(echo $data | awk '{print $2}')
+            echo "Link: $link"
+            eval "xdg-open '$link'"
         else
             echo "Message: $data"
             notify-send "$data"
