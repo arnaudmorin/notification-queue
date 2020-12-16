@@ -8,6 +8,7 @@ stdin and pushes them to notifications.arnaudmorin.fr
 Usage: cat some_fifo | ./push_to_notifications.py
 """
 
+import argparse
 import requests
 import sys
 import shlex
@@ -33,13 +34,20 @@ def send(password, data):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--force-link", help="Force message to be a link")
+    args = parser.parse_args()
+
     password = read_password()
     while True:
         line = sys.stdin.readline()
         if line == '':
             break
         data = shlex.split(line)
-        send(password, " ".join(data))
+        data_str = " ".join(data)
+        if args.force_link:
+            data_str = "xdg-open " + data_str
+        send(password, data_str)
 
 
 if __name__ == '__main__':
