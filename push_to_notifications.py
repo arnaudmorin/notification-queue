@@ -35,7 +35,7 @@ def send(password, data):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--force-link", help="Force message to be a link")
+    parser.add_argument("--force-link", help="Force message to be a link", action="store_true")
     args = parser.parse_args()
 
     password = read_password()
