@@ -21,9 +21,11 @@ def token_required(f):
     def decorator(*args, **kwargs):
         global password
         if 'X-Auth-Token' not in request.headers:
+            LOG.debug("Missing X-Auth-Token")
             return 'missing X-Auth-Token'
 
         if request.headers['X-Auth-Token'] != password:
+            LOG.debug("Invalid X-Auth-Token")
             return 'Invalid X-Auth-Token'
 
         return f(*args, **kwargs)
@@ -45,7 +47,7 @@ def post_queue(queue):
     """Add a message in a queue"""
     global queues
     data = request.get_data(as_text=True)
-    print(data)
+    LOG.debug(f"Adding {data} to {queue}")
 
     if queue not in queues.keys():
         queues[queue] = deque([], maxlen=5)
