@@ -9,11 +9,11 @@ Usage: cat some_fifo | ./push_to_notifications.py
 """
 
 import argparse
-import requests
-import sys
-import shlex
 import logging
 import os
+import shlex
+import sys
+import requests
 
 log = logging.getLogger(__name__)
 
@@ -24,10 +24,13 @@ def read_password():
 
 
 def send(password, data):
-    headers = {'Content-Type': 'text/plain;charset=utf-8'}
+    headers = {
+        'Content-Type': 'application/json',
+        'X-Auth-Token': password,
+    }
     print('Pushing {}'.format(data))
     requests.post(
-        'https://notifications.arnaudmorin.fr/{}'.format(password),
+        'https://notifications.arnaudmorin.fr/queues/poezio',
         data=data.encode('utf8'),
         headers=headers,
     )
