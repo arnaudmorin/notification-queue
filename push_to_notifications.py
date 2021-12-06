@@ -30,7 +30,7 @@ def send(password, data):
     }
     print('Pushing {}'.format(data))
     requests.post(
-        'https://notifications.arnaudmorin.fr/queues/poezio',
+        'https://notifications.arnaudmorin.fr/queues/mail',
         data=data.encode('utf8'),
         headers=headers,
     )
