@@ -1,6 +1,6 @@
 #!/bin/bash
 
-queue=${1:poezio}
+queue=${1-poezio}
 
 while true ; do
     sleep 1
@@ -16,6 +16,9 @@ while true ; do
             echo "$date Message: $data"
             if [[ $data =~ ^Meeting.* ]]; then
                 URGENCY='critical'
+            elif [[ $data =~ ^!.* ]]; then
+                URGENCY='critical'
+                data="${data:1}"
             else
                 URGENCY='normal'
             fi
