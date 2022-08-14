@@ -36,7 +36,8 @@ def read_password():
     """Read password from $HOME/.p"""
     f = open(os.environ['HOME'] + "/.p", "r+")
     for line in f.readlines():
-        password = line.rstrip()
+        if 'notification' in line:
+            password = line.split(':')[1].rstrip()
     f.close()
     return password
 
