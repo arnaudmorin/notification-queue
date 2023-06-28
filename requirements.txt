@@ -21,4 +21,4 @@ requests==2.25.1
 six==1.15.0
 urllib3==1.26.3
 web.py==0.62
-Werkzeug==1.0.1
+Werkzeug==2.2.3
