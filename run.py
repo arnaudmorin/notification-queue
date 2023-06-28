@@ -34,6 +34,9 @@ def token_required(f):
 
 def read_password():
     """Read password from $HOME/.p"""
+    if 'NOTIFICATION_PASSWORD' in os.environ:
+        return os.environ['NOTIFICATION_PASSWORD']
+
     f = open(os.environ['HOME'] + "/.p", "r+")
     for line in f.readlines():
         if 'notification' in line:
@@ -100,4 +103,13 @@ def read_queue_polling(queue):
 
 if __name__ == "__main__":
     password = read_password()
-    app.run(port=8080, threaded=True)
+    if 'NOTIFICATION_PORT' in os.environ:
+        port = os.environ['NOTIFICATION_PORT']
+    else:
+        port = 8080
+
+    if 'NOTIFICATION_HOST' in os.environ:
+        host = os.environ['NOTIFICATION_HOST']
+    else:
+        host = '127.0.0.1'
+    app.run(port=port, host=host, threaded=True)
