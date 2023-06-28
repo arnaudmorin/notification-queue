@@ -1,0 +1,13 @@
+[Unit]
+Description=Notification queue
+#After=syslog.target network.target
+
+[Service]
+User=debian
+Group=debian
+ExecStart=/opt/notification-queue/start.sh
+SyslogIdentifier=notification-queue
+Restart=always
+
+[Install]
+WantedBy=default.target
