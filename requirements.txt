@@ -5,7 +5,7 @@ chardet==4.0.0
 cheroot==8.5.2
 click==7.1.2
 cryptography==41.0.4
-Flask==1.1.2
+Flask==2.2.5
 Flask-SocketIO==5.0.1
 idna==2.10
 ipaddress==1.0.23
@@ -21,4 +21,4 @@ requests==2.31.0
 six==1.15.0
 urllib3==1.26.18
 web.py==0.62
-Werkzeug==2.2.3
+Werkzeug==3.0.1
