@@ -1,10 +1,11 @@
 #!/bin/bash
 
 queue=${1-poezio}
+server=${2-https://notifications.arnaudmorin.fr}
 
 while true ; do
     sleep 1
-    data=$(curl -X GET -H "Content-Type: application/json" -H "X-Auth-Token: $(cat ~/.p_notif)" https://notifications.arnaudmorin.fr/queues-polling/${queue} 2>/dev/null)
+    data=$(curl -X GET -H "Content-Type: application/json" -H "X-Auth-Token: $(cat ~/.p_notif)" ${server}/queues-polling/${queue} 2>/dev/null)
     date=$(date -R)
     if [ "Z$data" != "Z" ]; then
         # If it's a link to open
