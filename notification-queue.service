@@ -5,7 +5,7 @@ Description=Notification queue
 [Service]
 User=debian
 Group=debian
-ExecStart=/opt/notification-queue/start.sh
+ExecStart=/opt/notification-queue/start.sh 127.0.0.1 8080 source
 SyslogIdentifier=notification-queue
 Restart=always
 

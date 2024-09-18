@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd "$(dirname "$0")"
+
 export NOTIFICATION_HOST=${1-127.0.0.1}
 export NOTIFICATION_PORT=${2-8082}
 
