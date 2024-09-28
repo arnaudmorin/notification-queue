@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "notification-queue"
+version = "0.1.0"
+description = "A simple notification queue system for my own needs"
+authors = ["Arnaud Morin <arnaud.morin@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Flask = "^2.2.5"
+
+[tool.poetry.scripts]
+notification-queue = "notification_queue.main:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
