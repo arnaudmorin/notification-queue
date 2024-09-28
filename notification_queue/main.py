@@ -2,6 +2,7 @@
 
 import logging
 import os
+import sys
 import time
 from collections import deque
 from functools import wraps
@@ -9,7 +10,6 @@ from flask import Flask
 from flask import request
 
 app = Flask(__name__)
-password = ""
 queues = {}
 
 LOG = app.logger
@@ -19,25 +19,16 @@ logging.basicConfig(level=logging.DEBUG)
 def token_required(f):
     @wraps(f)
     def decorator(*args, **kwargs):
-        global password
         if 'X-Auth-Token' not in request.headers:
             LOG.debug("Missing X-Auth-Token")
             return 'missing X-Auth-Token'
 
-        if request.headers['X-Auth-Token'] != password:
+        if request.headers['X-Auth-Token'] != os.environ['NOTIFICATION_PASSWORD']:
             LOG.debug("Invalid X-Auth-Token")
             return 'Invalid X-Auth-Token'
 
         return f(*args, **kwargs)
     return decorator
-
-
-def read_password():
-    """Read password from ENV"""
-    if 'NOTIFICATION_PASSWORD' in os.environ:
-        return os.environ['NOTIFICATION_PASSWORD']
-    else:
-        return 'changeme'
 
 
 @app.route('/queues/<queue>', methods=['POST'])
@@ -97,8 +88,6 @@ def read_queue_polling(queue):
 
 
 def main():
-    global password
-    password = read_password()
     if 'NOTIFICATION_PORT' in os.environ:
         port = os.environ['NOTIFICATION_PORT']
     else:
@@ -108,6 +97,10 @@ def main():
         host = os.environ['NOTIFICATION_HOST']
     else:
         host = '127.0.0.1'
+
+    if 'NOTIFICATION_PASSWORD' not in os.environ:
+        print('Missing NOTIFICATION_PASSWORD in environment')
+        sys.exit(1)
     app.run(port=port, host=host, threaded=True)
 
 
