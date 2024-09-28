@@ -19,18 +19,26 @@ log = logging.getLogger(__name__)
 
 
 def read_password():
-    with open(os.environ['HOME'] + "/.p_notif") as fh:
-        return fh.read().splitlines()[0]
+    """Read password from $HOME/.p"""
+    if 'NOTIFICATION_PASSWORD' in os.environ:
+        return os.environ['NOTIFICATION_PASSWORD']
+
+    f = open(os.environ['HOME'] + "/.p", "r+")
+    for line in f.readlines():
+        if 'notification' in line:
+            password = line.split(':')[1].rstrip()
+    f.close()
+    return password
 
 
-def send(password, data):
+def send(password, data, server):
     headers = {
         'Content-Type': 'application/json',
         'X-Auth-Token': password,
     }
     print('Pushing {}'.format(data))
     requests.post(
-        'https://notifications.arnaudmorin.fr/queues/mail',
+        f'{server}/queues/mail',
         data=data.encode('utf8'),
         headers=headers,
     )
@@ -39,6 +47,7 @@ def send(password, data):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--force-link", help="Force message to be a link", action="store_true")
+    parser.add_argument("--server", help="Server URL", default='https://notifications.arnaudmorin.fr')
     args = parser.parse_args()
 
     password = read_password()
@@ -50,7 +59,7 @@ def main():
         data_str = " ".join(data)
         if args.force_link:
             data_str = "xdg-open " + data_str
-        send(password, data_str)
+        send(password, data_str, args.server)
 
 
 if __name__ == '__main__':
