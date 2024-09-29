@@ -8,8 +8,10 @@ from collections import deque
 from functools import wraps
 from flask import Flask
 from flask import request
+from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 queues = {}
 
 LOG = app.logger
@@ -85,6 +87,23 @@ def read_queue_polling(queue):
         return data
 
     return ""
+
+
+@socketio.on('connect_queue')
+def read_queue_ws(data):
+    """Handle WebSocket connection for a specific queue."""
+    global queues
+    queue = data.get('queue')
+
+    if not queue or queue not in queues:
+        emit('error', 'Invalid queue name')
+        return
+
+    if len(queues[queue]) > 0:
+        message = queues[queue].popleft()
+        emit('new_message', message)
+    else:
+        emit('no_messages', 'No messages in the queue right now')
 
 
 def main():
