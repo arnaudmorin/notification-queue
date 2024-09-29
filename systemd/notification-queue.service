@@ -1,11 +1,13 @@
 [Unit]
 Description=Notification queue
-#After=syslog.target network.target
 
 [Service]
 User=debian
 Group=debian
-ExecStart=/opt/notification-queue/start.sh 127.0.0.1 8080 source
+Environment='NOTIFICATION_HOST=127.0.0.1'
+Environment='NOTIFICATION_PORT=8080'
+Environment='NOTIFICATION_PASSWORD=changeme'
+ExecStart=/opt/notification-queue/venv/bin/notification-queue
 SyslogIdentifier=notification-queue
 Restart=always
 
