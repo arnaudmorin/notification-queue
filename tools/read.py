@@ -1,7 +1,9 @@
 import socketio
+import requests
 
-# Create an instance of the SocketIO client
-sio = socketio.Client()
+http_session = requests.Session()
+http_session.verify = False
+sio = socketio.Client(http_session=http_session)
 
 
 # Define events the client should listen for
@@ -33,5 +35,5 @@ def disconnect():
 
 
 # Connect to the server
-sio.connect('https://5.196.197.1:35800')  # Replace with your server's address
+sio.connect('https://5.196.197.1:35800')
 sio.wait()
