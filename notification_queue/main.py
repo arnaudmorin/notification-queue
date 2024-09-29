@@ -8,7 +8,7 @@ from collections import deque
 from functools import wraps
 from flask import Flask
 from flask import request
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, emit, disconnect
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -23,15 +23,31 @@ def token_required(f):
     def decorator(*args, **kwargs):
         if 'X-Auth-Token' not in request.headers:
             LOG.debug("Missing X-Auth-Token")
-            return 'missing X-Auth-Token'
+            return 'Missing X-Auth-Token', 401
 
         if request.headers['X-Auth-Token'] != os.environ['NOTIFICATION_PASSWORD']:
             LOG.debug("Invalid X-Auth-Token")
-            return 'Invalid X-Auth-Token'
+            return 'Invalid X-Auth-Token', 401
 
         return f(*args, **kwargs)
     return decorator
 
+
+def token_required_ws(f):
+    @wraps(f)
+    def decorator(*args, **kwargs):
+        if 'X-Auth-Token' not in request.headers:
+            LOG.debug("Missing X-Auth-Token")
+            disconnect()
+            return False
+
+        if request.headers['X-Auth-Token'] != os.environ['NOTIFICATION_PASSWORD']:
+            LOG.debug("Invalid X-Auth-Token")
+            disconnect()
+            return False
+
+        return f(*args, **kwargs)
+    return decorator
 
 @app.route('/queues/<queue>', methods=['POST'])
 @token_required
@@ -45,6 +61,7 @@ def post_queue(queue):
         queues[queue] = deque([], maxlen=5)
 
     queues[queue].append(data)
+    socketio.emit('wait_message', queue)
     return 'ok'
 
 
@@ -89,21 +106,25 @@ def read_queue_polling(queue):
     return ""
 
 
-@socketio.on('connect_queue')
+@socketio.on('connect')
+@token_required_ws
+def handle_connect():
+    """Verify client token"""
+    pass
+
+
+@socketio.on('read_queue')
+@token_required_ws
 def read_queue_ws(data):
     """Handle WebSocket connection for a specific queue."""
     global queues
     queue = data.get('queue')
 
-    if not queue or queue not in queues:
-        emit('error', 'Invalid queue name')
-        return
-
-    if len(queues[queue]) > 0:
-        message = queues[queue].popleft()
-        emit('new_message', message)
-    else:
-        emit('no_messages', 'No messages in the queue right now')
+    if queue and queue in queues.keys():
+        while len(queues[queue]) > 0:
+            message = queues[queue].popleft()
+            LOG.debug(f"Poping {message} from {queue}")
+            emit('new_message', message)
 
 
 def main():
